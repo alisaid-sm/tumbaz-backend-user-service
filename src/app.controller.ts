@@ -12,6 +12,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
 import { FindOneUserDto } from './dto/find-one-user.dto';
+import { FindOneUserEmailDto } from './dto/find-one-user-email.dto';
 
 @Controller()
 export class AppController {
@@ -25,6 +26,11 @@ export class AppController {
   @Get('/user/:id')
   getUser(@Param() params: FindOneUserDto) {
     return this.appService.getUser(params.id);
+  }
+
+  @Get('/user/:email/identity')
+  getUserByEmail(@Param() params: FindOneUserEmailDto) {
+    return this.appService.getUserByEmail(params.email);
   }
 
   @Patch('/user/:id')

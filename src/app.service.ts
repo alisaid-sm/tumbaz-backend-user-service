@@ -62,8 +62,41 @@ export class AppService {
           'last_name',
           'address',
           'phone_number',
+          'refresh_token',
         ],
         where: { id },
+      });
+
+      if (!user) {
+        throw new BadRequestException({
+          message: ['User not found'],
+          error: 'Not Found',
+          statusCode: 404,
+        });
+      }
+
+      return { message: 'User fetched successfully', data: user };
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
+  async getUserByEmail(email: string) {
+    try {
+      /*
+    - get user from database
+    */
+      const user = await this.userRepository.findOne({
+        select: [
+          'id',
+          'email',
+          'first_name',
+          'last_name',
+          'address',
+          'phone_number',
+          'password',
+        ],
+        where: { email },
       });
 
       if (!user) {

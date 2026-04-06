@@ -40,6 +40,9 @@ export class User {
   @Column({ type: 'varchar', length: 20, nullable: true, default: null })
   phone_number: string | null;
 
+  @Column({ type: 'text', nullable: true, default: null })
+  refresh_token: string | null;
+
   @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;
 
