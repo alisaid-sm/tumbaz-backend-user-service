@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -13,6 +14,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
 import { FindOneUserDto } from './dto/find-one-user.dto';
 import { FindOneUserEmailDto } from './dto/find-one-user-email.dto';
+import { BaseDto } from './dto/base.dto';
 
 @Controller()
 export class AppController {
@@ -47,8 +49,8 @@ export class AppController {
   }
 
   @Get('/user')
-  listUser() {
-    return this.appService.listUser();
+  listUser(@Query() filters: BaseDto) {
+    return this.appService.listUser(filters);
   }
 
   @Post('/user/:id/change-password')

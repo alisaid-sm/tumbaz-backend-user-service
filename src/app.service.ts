@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { handleError } from './common/utils/handle-error.util';
 import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
+import { BaseDto } from './dto/base.dto';
 
 @Injectable()
 export class AppService {
@@ -165,12 +166,16 @@ export class AppService {
     }
   }
 
-  async listUser() {
+  async listUser(filters: BaseDto) {
     try {
       /*
     - list users from database
     */
-      const users = await this.userRepository.find({
+      const page: number = Number(filters.page ?? 1);
+      const limit: number = Number(filters.limit ?? 10);
+      const skip: number = (page - 1) * limit;
+
+      const [items, count] = await this.userRepository.findAndCount({
         select: [
           'id',
           'email',
@@ -179,9 +184,26 @@ export class AppService {
           'address',
           'phone_number',
         ],
+        order: filters.order_by
+          ? {
+              [filters.order_by]: filters.order_type,
+            }
+          : {},
+        take: limit,
+        skip,
       });
 
-      return { message: 'User list fetched successfully', data: users };
+      return {
+        message: 'User list fetched successfully',
+        data: items,
+        meta: {
+          total: count,
+          page_count: items.length,
+          size_per_page: limit,
+          total_pages: Math.ceil(count / limit),
+          current_page: page,
+        },
+      };
     } catch (error) {
       handleError(error);
     }
