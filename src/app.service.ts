@@ -7,7 +7,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/users.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { handleError } from './common/utils/handle-error.util';
 import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
@@ -184,6 +184,19 @@ export class AppService {
           'address',
           'phone_number',
         ],
+        where: filters.search
+          ? [
+              {
+                email: ILike(`%${filters.search}%`),
+              },
+              {
+                first_name: ILike(`%${filters.search}%`),
+              },
+              {
+                last_name: ILike(`%${filters.search}%`),
+              },
+            ]
+          : {},
         order: filters.order_by
           ? {
               [filters.order_by]: filters.order_type,
