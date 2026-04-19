@@ -25,6 +25,16 @@ export class AppController {
     return this.appService.createUser(createUserDto);
   }
 
+  @Get('/user')
+  listUser(@Query() filters: BaseDto) {
+    return this.appService.listUser(filters);
+  }
+
+  @Get('/user/count')
+  countUsers(@Query() filters: BaseDto) {
+    return this.appService.countUsers(filters);
+  }
+
   @Get('/user/:id')
   getUser(@Param() params: FindOneUserDto) {
     return this.appService.getUser(params.id);
@@ -46,11 +56,6 @@ export class AppController {
   @Delete('/user/:id')
   deleteUser(@Param() params: FindOneUserDto) {
     return this.appService.deleteUser(params.id);
-  }
-
-  @Get('/user')
-  listUser(@Query() filters: BaseDto) {
-    return this.appService.listUser(filters);
   }
 
   @Post('/user/:id/change-password')

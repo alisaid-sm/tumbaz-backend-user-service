@@ -222,6 +222,36 @@ export class AppService {
     }
   }
 
+  async countUsers(filters: BaseDto) {
+    try {
+      /*
+    - count users from database
+    */
+      const count = await this.userRepository.count({
+        where: filters.search
+          ? [
+              {
+                email: ILike(`%${filters.search}%`),
+              },
+              {
+                first_name: ILike(`%${filters.search}%`),
+              },
+              {
+                last_name: ILike(`%${filters.search}%`),
+              },
+            ]
+          : {},
+      });
+
+      return {
+        message: 'User count fetched successfully',
+        data: { count },
+      };
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
   async changeUserPassword(
     id: string,
     changeUserPasswordDto: ChangeUserPasswordDto,
