@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/users.entity';
+import { Profile } from './entities/profile.entity';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { User } from './entities/users.entity';
         synchronize: true,
       }),
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Profile]),
   ],
   controllers: [AppController],
   providers: [AppService],

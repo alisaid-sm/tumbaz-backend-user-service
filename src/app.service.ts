@@ -12,6 +12,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { handleError } from './common/utils/handle-error.util';
 import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
 import { BaseDto } from './dto/base.dto';
+import { Profile } from './entities/profile.entity';
 
 @Injectable()
 export class AppService {
@@ -20,6 +21,8 @@ export class AppService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Profile)
+    private profileRepository: Repository<Profile>,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
@@ -41,7 +44,12 @@ export class AppService {
         });
       }
 
-      const user = this.userRepository.create(createUserDto);
+      const user = this.userRepository.create({
+        ...createUserDto,
+        profile: {
+          ...createUserDto,
+        },
+      });
       await this.userRepository.save(user);
 
       return { message: 'User created successfully' };
@@ -58,14 +66,14 @@ export class AppService {
       const user = await this.userRepository.findOne({
         select: [
           'id',
+          'username',
           'email',
-          'first_name',
-          'last_name',
-          'address',
-          'phone_number',
           'refresh_token',
+          'role_id',
+          'role_name',
         ],
         where: { id },
+        relations: ['profile'],
       });
 
       if (!user) {
@@ -88,15 +96,7 @@ export class AppService {
     - get user from database
     */
       const user = await this.userRepository.findOne({
-        select: [
-          'id',
-          'email',
-          'first_name',
-          'last_name',
-          'address',
-          'phone_number',
-          'password',
-        ],
+        select: ['id', 'username', 'email', 'role_id', 'role_name', 'password'],
         where: { email },
       });
 
@@ -176,24 +176,14 @@ export class AppService {
       const skip: number = (page - 1) * limit;
 
       const [items, count] = await this.userRepository.findAndCount({
-        select: [
-          'id',
-          'email',
-          'first_name',
-          'last_name',
-          'address',
-          'phone_number',
-        ],
+        select: ['id', 'username', 'email', 'role_id', 'role_name'],
         where: filters.search
           ? [
               {
                 email: ILike(`%${filters.search}%`),
               },
               {
-                first_name: ILike(`%${filters.search}%`),
-              },
-              {
-                last_name: ILike(`%${filters.search}%`),
+                username: ILike(`%${filters.search}%`),
               },
             ]
           : {},
@@ -234,10 +224,7 @@ export class AppService {
                 email: ILike(`%${filters.search}%`),
               },
               {
-                first_name: ILike(`%${filters.search}%`),
-              },
-              {
-                last_name: ILike(`%${filters.search}%`),
+                username: ILike(`%${filters.search}%`),
               },
             ]
           : {},

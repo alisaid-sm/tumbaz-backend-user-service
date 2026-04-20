@@ -12,6 +12,16 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @ApiProperty({
+    example: 'john',
+    description: 'username',
+    maxLength: 100,
+  })
+  @IsNotEmpty({ message: 'Username tidak boleh kosong' })
+  @IsString()
+  @MaxLength(100, { message: 'Username maksimal 100 karakter' })
+  username: string;
+
+  @ApiProperty({
     example: 'johndoe@example.com',
     description: 'Alamat email pengguna',
     maxLength: 255,
